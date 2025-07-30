@@ -11,6 +11,7 @@ besu/contracts/node_modules
 
 besu/contracts/build/contracts
 
+.env
 
 
 .DS_Store
