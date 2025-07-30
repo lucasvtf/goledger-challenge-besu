@@ -65,17 +65,8 @@ func main() {
 		api.GET("/check", handler.CheckHandler)
 	}
 
-	log.Printf("🚀 Server starting on port %s", cfg.Port)
-	log.Printf("📍 Besu RPC: %s", cfg.BesuRPCURL)
-	log.Printf("📄 Contract: %s", cfg.ContractAddress)
-	log.Printf("💾 Database: %s:%s/%s", cfg.DatabaseHost, cfg.DatabasePort, cfg.DatabaseName)
-	log.Printf("🔗 Endpoints:")
-	log.Printf("   GET  /api/v1/health - Health check")
-	log.Printf("   GET  /api/v1/value  - Get contract value")
-	log.Printf("   POST /api/v1/value  - Set contract value")
-	log.Printf("   POST /api/v1/sync   - Sync blockchain to database")
-	log.Printf("   GET  /api/v1/check  - Check if values match")
-
+	log.Printf("Server starting on port %s", cfg.Port)
+	
 	if err := r.Run(":" + cfg.Port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

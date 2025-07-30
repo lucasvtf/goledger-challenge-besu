@@ -113,7 +113,7 @@ POST /simple-storage/set/value
 Content-Type: application/json
 
 {
-  "value": "1997"
+  "value": "2500"
 }
 ```
 **Description:** Sets a new value for the smart contract variable. This value is sent to the smart contract on the blockchain.
@@ -141,7 +141,7 @@ GET /simple-storage/get/value
 **Success Response:**
 ```json
 {
-  "value": 1997
+  "value": 2500
 }
 ```
 
@@ -162,7 +162,7 @@ GET /simple-storage/sync/value
 ```json
 {
   "message": "Value synchronized successfully",
-  "value": 1997
+  "value": 2500
 }
 ```
 
@@ -250,17 +250,3 @@ docker-compose up -d postgres
 # Start all services
 docker-compose up -d
 ```
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Hyperledger Besu](https://besu.hyperledger.org/) for the blockchain platform
-- [Gin Web Framework](https://gin-gonic.com/) for the HTTP server
-- [Go Ethereum](https://geth.ethereum.org/) for blockchain interaction tools
-
----
-
-⭐ **Star this repository if you find it helpful!**

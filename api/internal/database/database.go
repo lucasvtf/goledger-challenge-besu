@@ -62,7 +62,6 @@ func (c *Client) createTable() error {
 		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	);
 	
-	-- Inserir valor inicial se tabela estiver vazia
 	INSERT INTO contract_values (value) 
 	SELECT '0' 
 	WHERE NOT EXISTS (SELECT 1 FROM contract_values);
