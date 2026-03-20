@@ -1,17 +1,3 @@
-
-# besu
-besu/node/besu-0/data
-besu/node/besu-1/data
-besu/node/besu-2/data
-besu/node/besu-3/data
-
-besu/genesis
-
-besu/contracts/node_modules
-
-besu/contracts/build/contracts
-
-
-
+# Misc
 .DS_Store
 tmp
