@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: GoLedger Challenge Besu API
+  description: |
+    REST API that interacts with a SimpleStorage smart contract deployed on a
+    Hyperledger Besu network and keeps a local PostgreSQL cache for comparison.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /set:
+    post:
+      summary: Set value on the smart contract
+      description: |
+        Sends a transaction to the SimpleStorage contract calling `set(uint256)`.
+        Waits for the transaction to be mined before returning.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetRequest"
+            example:
+              value: 99
+      responses:
+        "200":
+          description: Transaction mined successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SetResponse"
+              example:
+                tx_hash: "0xabc123..."
+        "400":
+          description: Invalid request (missing or malformed value)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: "invalid request: value is required"
+        "500":
+          description: Blockchain or server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /get:
+    get:
+      summary: Get current value from the smart contract
+      description: |
+        Calls `get()` on the SimpleStorage contract (read-only, no transaction).
+        Returns the current on-chain value.
+      responses:
+        "200":
+          description: Current contract value
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetResponse"
+              example:
+                value: 99
+        "500":
+          description: Blockchain or server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /sync:
+    post:
+      summary: Sync blockchain value to local database
+      description: |
+        Reads the current value from the smart contract and saves it to the
+        PostgreSQL database for later comparison.
+      responses:
+        "200":
+          description: Value synced successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncResponse"
+              example:
+                value: 99
+                synced: true
+        "500":
+          description: Blockchain, database, or server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /check:
+    get:
+      summary: Compare database value with blockchain value
+      description: |
+        Reads the current on-chain value and the latest synced value from the
+        database, then returns both along with a boolean indicating whether
+        they match.
+      responses:
+        "200":
+          description: Comparison result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckResponse"
+              examples:
+                matching:
+                  summary: Values match
+                  value:
+                    blockchain_value: 99
+                    db_value: 99
+                    match: true
+                mismatch:
+                  summary: Values do not match
+                  value:
+                    blockchain_value: 50
+                    db_value: 99
+                    match: false
+                no_sync:
+                  summary: No value synced yet
+                  value:
+                    blockchain_value: 50
+                    db_value: null
+                    match: false
+        "500":
+          description: Blockchain, database, or server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    SetRequest:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          type: integer
+          format: int64
+          description: The value to store in the smart contract
+
+    SetResponse:
+      type: object
+      properties:
+        tx_hash:
+          type: string
+          description: The hash of the mined transaction
+
+    GetResponse:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+          description: Current value stored in the smart contract
+
+    SyncResponse:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+          description: The synced value
+        synced:
+          type: boolean
+          description: Whether the sync was successful
+
+    CheckResponse:
+      type: object
+      properties:
+        blockchain_value:
+          type: integer
+          format: int64
+          description: Current value on the blockchain
+        db_value:
+          type: integer
+          format: int64
+          nullable: true
+          description: Latest synced value in the database (null if never synced)
+        match:
+          type: boolean
+          description: Whether the blockchain and database values are equal
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
