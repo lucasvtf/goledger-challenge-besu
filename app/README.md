@@ -22,9 +22,13 @@ Note the contract address printed to stdout.
 
 ### 2. Start PostgreSQL
 
+From the project root:
+
 ```bash
-docker run --name besu-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=besu -p 5432:5432 -d postgres
+docker-compose up -d
 ```
+
+This starts a PostgreSQL 16 container with the correct database and credentials.
 
 ### 3. Run the application
 
@@ -148,6 +152,12 @@ The table is auto-created on application startup via the `Migrate()` function.
 ## Stopping the Environment
 
 ```bash
-docker stop besu-db && docker rm besu-db
+# Stop PostgreSQL (from project root)
+docker-compose down
+
+# Stop PostgreSQL and remove data
+docker-compose down -v
+
+# Stop Besu network
 make stop-devnet
 ```
